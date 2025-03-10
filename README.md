@@ -1,0 +1,2 @@
+# WritingBench
+WritingBench: A Comprehensive Benchmark for Generative Writing
