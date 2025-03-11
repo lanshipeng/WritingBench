@@ -128,7 +128,7 @@ python evaluate_benchmark.py \
 ```
 @misc{wu2025writingbench,
       title={WritingBench: A Comprehensive Benchmark for Generative Writing}, 
-      author={Yuning Wu and Jiahao Mei and Ming Yan and Chenliang Li and SHaopeng Lai and Yuran Ren and Zijia Wang and Ji Zhang and Mengyue Wu and Qin Jin and Fei Huang},
+      author={Yuning Wu and Jiahao Mei and Ming Yan and Chenliang Li and Shaopeng Lai and Yuran Ren and Zijia Wang and Ji Zhang and Mengyue Wu and Qin Jin and Fei Huang},
       year={2025},
       url={https://arxiv.org/abs/2503.05244}, 
 }
