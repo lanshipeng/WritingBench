@@ -17,7 +17,7 @@ WritingBench is a comprehensive benchmark for evaluating LLMs' writing capabilit
 - 3 core writing requirements: Style / Format / Length
 - 1,546 avg. tokens per query
 
-WritingBench integrates diverse sources of materials, averaging 1,546 tokens per source. Each query is paired with 5 instance-specific criteria, scoring either through LLM evaluators or through a finetuned critic model.
+WritingBench integrates diverse sources of materials. Each query is paired with **5 instance-specific criteria**, scoring either through LLM evaluators or through a finetuned critic model.
 
 <div align="center">
   <img src="pics/comparision.png" alt="Benchmark Comparison" width="700">
