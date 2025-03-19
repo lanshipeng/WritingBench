@@ -1,35 +1,29 @@
-import requests
 import time
 from typing import Callable
+from vllm import LLM, SamplingParams
 
-
-class ClaudeAgent(object):
+class CriticAgent(object):
     def __init__(self,
                  system_prompt: str = None):
         self.system_prompt = system_prompt
-        self.api_key = '' # Yor API KEY
-        self.url = '' # Your URL path
-        self.model = '' # Model name
-    
-    def call_claude(self,
-             messages: str,
-             top_k: int = 20,
-             top_p: float = 0.8,
-             temperature: float = 0.7,
-             max_length: int = 2048):
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
-        }
+        self.model = LLM(
+            model="", # Your local path. Please download critic model from https://huggingface.co/AQuarterMile/WritingBench-Critic-Model-Qwen-7B.
+            tensor_parallel_size=1, # Your tensor parallel size setting. Defaults to 1, indicating no parallelism
+        )
 
-        data = {
-            "model": f"{self.model}",  
-            "messages": messages,  
-            "max_tokens": max_length,
-            "top_k": top_k,
-            "top_p": top_p,
-            "temperature": temperature
-        }
+    def call_critic(self,
+            messages: str,
+            top_k: int = 20,
+            top_p: float = 0.8,
+            temperature: float = 0.7,
+            max_length: int = 2048):
+
+        sampling_params = SamplingParams(
+            temperature=temperature,
+            top_p=top_p,
+            top_k=int(top_k),
+            max_tokens=int(max_length)
+        )
 
         attempt = 0
         max_attempts = 5
@@ -37,15 +31,11 @@ class ClaudeAgent(object):
 
         while attempt < max_attempts:
             try:
-                response = requests.post(self.url, headers=headers, json=data)
-
-                if response.status_code == 200:
-                    return response.json()["choices"][0]["message"]["content"]
-                else:
-                    print(f"Attempt {attempt+1}: Failed with status {response.status_code}, retrying...")
+                response = self.model.chat(messages, sampling_params)
+                return response[0].outputs[0].text
             
-            except requests.exceptions.RequestException as e:
-                print(f"Attempt {attempt+1}: Request failed due to network error: {e}, retrying...")
+            except Exception as e:
+                print(f"Attempt {attempt+1}: VLLM call failed due to error: {e}, retrying...")
 
             time.sleep(wait_time)
             attempt += 1
@@ -76,7 +66,7 @@ class ClaudeAgent(object):
         try_times = 0
 
         while try_times < max_try:
-            response = self.call_claude(
+            response = self.call_critic(
                 messages=messages,
                 top_k=top_k,
                 top_p=top_p,

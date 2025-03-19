@@ -1,11 +1,10 @@
 import json
 import os
-import random
 import argparse
 import jsonlines
 from tqdm import tqdm
 from prompt import evaluate_system, evaluate_prompt
-from evaluator import ClaudeAgent
+from evaluator import ClaudeAgent, CriticAgent
 
 EVAL_TIMES = 1
 
@@ -128,16 +127,22 @@ def process(agent, input_file, out_file, id_query_criteria_map):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Process lines from an input file.")
+    parser.add_argument("--evaluator", choices=['claude', 'critic'], required=True, help="Choose the scoring model to use: 'claude' or 'critic'.")
     parser.add_argument("--query_criteria_file", type=str, help="Path to the query and criteria file.")
     parser.add_argument("--input_file", type=str, help="Path to the input file.")
     parser.add_argument("--output_file", type=str, help="Path to the output file.")
 
     args = parser.parse_args()
 
-    # Evaluator initialization
-    agent = EvalAgent(ClaudeAgent(
-        system_prompt=evaluate_system,
-    ))
+    # Evaluator initialization based on chosen model
+    if args.model == 'claude':
+        agent = EvalAgent(ClaudeAgent(
+            system_prompt=evaluate_system,
+        ))
+    else:
+        agent = EvalAgent(CriticAgent(
+            system_prompt=evaluate_system,
+        ))
 
     id_query_criteria_map = load_query_criteria(args.query_criteria_file)
 
