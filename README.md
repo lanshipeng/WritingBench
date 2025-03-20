@@ -108,7 +108,7 @@ git clone https://github.com/yourusername/WritingBench.git
   self.url = "Your API endpoint"
   self.model = "Chose your model name"
 ```
-- For critic model 
+- For critic model, see evaluator/critic.py
 ```bash
   self.model = LLM(
       model="", # Your local path. Please download critic model from https://huggingface.co/AQuarterMile/WritingBench-Critic-Model-Qwen-7B.
