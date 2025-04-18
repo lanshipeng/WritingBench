@@ -135,7 +135,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Evaluator initialization based on chosen model
-    if args.model == 'claude':
+    if args.evaluator == 'claude':
         agent = EvalAgent(ClaudeAgent(
             system_prompt=evaluate_system,
         ))
