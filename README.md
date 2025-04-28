@@ -1,6 +1,6 @@
 # WritingBench: A Comprehensive Benchmark for Generative Writing
 <p align="center">
-  📃 <a href="https://arxiv.org/abs/2503.05244" target="_blank">[Paper]</a> • 🚀 <a href="https://github.com/X-PLUG/WritingBench" target="_blank">[Github Repo]</a> • 📏 <a href="https://huggingface.co/AQuarterMile/WritingBench-Critic-Model-Qwen-7B" target="_blank">[Critic Model]</a> • ✍️ <a href="https://huggingface.co/AQuarterMile/Writing-Model-Qwen-7B" target="_blank">[Writing Model]</a>
+  📃 <a href="https://arxiv.org/abs/2503.05244" target="_blank">[Paper]</a> • 🚀 <a href="https://github.com/X-PLUG/WritingBench" target="_blank">[Github Repo]</a> • 🏆 <a href="https://github.com/X-PLUG/WritingBench" target="_blank">[Leaderboard]</a> • 📏 <a href="https://huggingface.co/AQuarterMile/WritingBench-Critic-Model-Qwen-7B" target="_blank">[Critic Model]</a> • ✍️ <a href="https://huggingface.co/AQuarterMile/Writing-Model-Qwen-7B" target="_blank">[Writing Model]</a>
 </p>
 
 <div align="center">
@@ -10,18 +10,22 @@
        width="900">
 </div>
 
+## 🚀 What's New
+
+- **🏆 Leaderboard Launch**: Explore evaluation results on [Hugging Face Leaderboard](https://huggingface.co/spaces/WritingBench/WritingBench) and [ModelScope Leaderboard](https://modelscope.cn/studios/WritingBench/WritingBench).
+- Update latest LLM evaluations (Claude-3-7-Sonnet, o3, grok-3, etc)
+- Update [benchmark queries & criteria](https://github.com/X-PLUG/WritingBench/blob/main/benchmark_query/benchmark_all.jsonl) for improved assessment. 
+- Update [evaluation prompt](https://github.com/X-PLUG/WritingBench/blob/main/prompt.py) for better scoring, and switch to using Claude-3-7-Sonnet for evaluation.
+- Temporarily suspended style/format/length requirement subsets (new version work in progress).
+
+
 ## 📖 Overview
-WritingBench is a comprehensive benchmark for evaluating LLMs' writing capabilities across **1,239 real-world queries**, spanning:
+WritingBench is a comprehensive benchmark for evaluating LLMs' writing capabilities across **1,000 real-world queries**, spanning:
 - 6 primary domains 
 - 100 fine-grained subdomains
-- 3 core writing requirements: Style / Format / Length
-- 1,546 avg. tokens per query
+- 1,000+ avg. tokens per query
 
 WritingBench integrates diverse sources of materials. Each query is paired with **5 instance-specific criteria**, scoring either through LLM evaluators or through a finetuned critic model.
-
-<div align="center">
-  <img src="pics/comparision.png" alt="Benchmark Comparison" width="700">
-</div>
 
 
 ## 🏗️ Benchmark Construction
@@ -86,36 +90,26 @@ git clone https://github.com/yourusername/WritingBench.git
 │   ├── critic.py             # Critic model evaluation interface
 │   └── llm.py                # LLM evaluation interface
 └── benchmark_query/
-    ├── benchmark_all.jsonl   # Full dataset (1239 queries)
-    └── requirement/
-        ├── style/            # Style-specific subsets
-        │   ├── style_subset.jsonl
-        │   └── style_subset_C.jsonl
-        ├── format/           # Format-specific subsets
-        │   ├── format_subset.jsonl
-        │   └── format_subset_C.jsonl
-        └── length/           # Length-specific subsets
-            ├── length_subset.jsonl
-            └── length_subset_C.jsonl
+    └── benchmark_all.jsonl   # Full dataset (1000 queries)
 ```
 
 ## 🚀 Quick Start
 
 1. Add your API credentials:
-- For LLM-as-a-Judge, see evaluator/llm.py
+- For LLM-as-a-Judge, see `evaluator/llm.py`. Recommend using `Claude-3-7-Sonnet` for evaluation.
 ```bash
   self.api_key = "your_api_key_here"
   self.url = "Your API endpoint"
   self.model = "Chose your model name"
 ```
-- For critic model, see evaluator/critic.py
+- For critic model, see `evaluator/critic.py`
 ```bash
   self.model = LLM(
       model="", # Your local path. Please download critic model from https://huggingface.co/AQuarterMile/WritingBench-Critic-Model-Qwen-7B.
       tensor_parallel_size=1, # Your tensor parallel size setting. Defaults to 1, indicating no parallelism
   )
 ```
-2. Choose appropriate evaluation sets from benchmark_query/
+2. Choose appropriate evaluation sets from `benchmark_query/`
 ```bash
 python evaluate_benchmark.py \
   --evaluator critic  # or claude
@@ -123,12 +117,6 @@ python evaluate_benchmark.py \
   --input_file samples.jsonl \
   --output_file scores.jsonl
 ```
-
-## 📊 Evaluation Results
-
-<div align="center">
-  <img src="pics/results.png" alt="Benchmark Evaluation Results" width="700">
-</div>
 
 ## 📝 Citation
 
