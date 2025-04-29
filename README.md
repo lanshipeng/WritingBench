@@ -5,7 +5,6 @@
 
 <div align="center">
   <img src="pics/construction.png" 
-       class="header-image"
        alt="Benchmark Construction Pipeline"
        width="900">
 </div>
