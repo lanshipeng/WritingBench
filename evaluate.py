@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     # 加载类型配置
     query_criteria_map, subtype_choices = load_query_criteria("criteria.jsonl")
-    agent = EvalAgent(QwenAgent(system_prompt=evaluate_system), query_criteria_map)
+    agent = EvalAgent(QwenAgent(system_prompt=evaluate_system,api_key=args.ak), query_criteria_map)
 
     print("剧本类型配置：", subtype_choices)
 
