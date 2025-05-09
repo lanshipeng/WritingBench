@@ -4,14 +4,14 @@ import argparse
 import jsonlines
 from tqdm import tqdm
 from prompt import evaluate_system, evaluate_prompt
-from evaluator import ClaudeAgent, CriticAgent
+from evaluator import ClaudeAgent, CriticAgent, QwenAgent
 
 EVAL_TIMES = 1
 
 class EvalAgent(object):
-    def __init__(self, agent):
+    def __init__(self, agent,query_criteria_map):
         self.agent = agent
-    
+        self.query_criteria_map = query_criteria_map
     def success_check_fn_score(self, response):
         try:
             result = json.loads(response.strip('json|```'))
@@ -55,7 +55,84 @@ class EvalAgent(object):
             return response
         else:
             raise ValueError("Fail to generate score!")
+    def evaluate_script(self, index, drama_content):
+        content = {"index": index, "response": drama_content}
+                
+        if index not in self.query_criteria_map:
+            return {"error": "未知剧本类型"}
+        
+        query = self.query_criteria_map[index]['query']
+        criteria = self.query_criteria_map[index]['criteria']
 
+        data = {
+            "index": index,
+            "scores": {}
+        }
+
+        total_score = 0  # 总分累加器
+        # 添加总进度条（评估所有标准）
+        with tqdm(total=len(criteria)*EVAL_TIMES, 
+                desc=f"评估剧本类型 {index}", 
+                unit="次") as pbar:
+            
+            for c in criteria:
+                data["scores"][c["name"]] = []
+                
+                # 每个标准评估EVAL_TIMES次
+                for _ in range(EVAL_TIMES):
+                    score = self.generate_score(content, query, c)
+                    data["scores"][c["name"]].append(score)
+                    total_score += float(score["score"])  # 直接累加每次评分的分数
+                    pbar.update(1)  # 更新进度条
+        # 计算整体平均分（总分数 / 总评分次数）
+        if criteria and EVAL_TIMES > 0:
+            data["average_score"] = round(total_score / (len(criteria) * EVAL_TIMES), 1)
+
+        return self.format_score_result(data)
+    def format_score_result(self, score_data):
+        html = f"""
+        <div style='font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;'>
+            <h2 style='color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 20px;'>
+                评分结果
+            </h2>
+            
+            <!-- 平均分 -->
+            <div style='margin-bottom: 30px;'>
+                <h3 style='margin: 0 0 10px 0; font-size: 18px; color: #2c3e50;'>
+                    Average Score: 
+                    <span style='color: {"#e74c3c" if score_data["average_score"] < 5 else "#f39c12" if score_data["average_score"] < 8 else "#27ae60"};'>
+                        {score_data["average_score"]}
+                    </span>
+                </h3>
+                <h3 style='margin: 10px 0; font-size: 18px; color: #2c3e50;'>
+                    Scoring Details
+                </h3>
+            </div>
+        """
+        
+        for category, evaluation in score_data['scores'].items():
+            score = evaluation[0]['score']
+            reason = evaluation[0]['reason']
+            
+            color = "#e74c3c" if score < 5 else "#f39c12" if score < 8 else "#27ae60"
+            
+            html += f"""
+            <div style='margin-bottom: 20px;'>
+                <h4 style='margin: 0 0 5px 0; font-size: 16px; color: #2c3e50; font-weight: 600;'>{category}</h4>
+                <div style='display: flex; align-items: center; margin-bottom: 8px;'>
+                    <span style='font-size: 15px; color: #7f8c8d;'>score: </span>
+                    <span style='font-size: 18px; font-weight: bold; color: {color}; margin-left: 5px;'>
+                        {score}
+                    </span>
+                </div>
+                <div style='background: #f8f9fa; padding: 12px; border-radius: 4px;'>
+                    <p style='margin: 0; color: #34495e; line-height: 1.5; font-size: 14px;'>{reason}</p>
+                </div>
+            </div>
+            """
+        
+        html += "</div>"
+        return html
 def save_output(output, file_name):
     """
     Saves output data to a specified file in JSONL format.
@@ -79,12 +156,14 @@ def load_query_criteria(jsonl_file_path):
     Loads criteria from a JSONL file into a dictionary.
     """
     data_list = {}
+    subtype_list = []
     with jsonlines.open(jsonl_file_path) as reader:
         for obj in reader:
             data_list[obj['index']] = {}
             data_list[obj['index']]['query'] = obj['query']
             data_list[obj['index']]['criteria'] = obj['criteria']
-    return data_list
+            subtype_list.append({"label": obj['subtype'], "value": obj['index']})
+    return data_list,subtype_list
 
 def process(agent, input_file, out_file, id_query_criteria_map):
     """
@@ -127,7 +206,7 @@ def process(agent, input_file, out_file, id_query_criteria_map):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Process lines from an input file.")
-    parser.add_argument("--evaluator", choices=['claude', 'critic'], required=True, help="Choose the scoring model to use: 'claude' or 'critic'.")
+    parser.add_argument("--evaluator", choices=['claude', 'critic','qwen'], required=True, help="Choose the scoring model to use: 'claude' or 'critic'.")
     parser.add_argument("--query_criteria_file", type=str, help="Path to the query and criteria file.")
     parser.add_argument("--input_file", type=str, help="Path to the input file.")
     parser.add_argument("--output_file", type=str, help="Path to the output file.")
@@ -139,11 +218,15 @@ if __name__ == "__main__":
         agent = EvalAgent(ClaudeAgent(
             system_prompt=evaluate_system,
         ))
-    else:
+    elif args.evaluator == 'critic':
         agent = EvalAgent(CriticAgent(
             system_prompt=evaluate_system,
         ))
+    elif args.evaluator == 'qwen':
+        agent = EvalAgent(QwenAgent(
+            system_prompt=evaluate_system, #"You are Qwen, a helpful assistant from Alibaba Cloud."
+        ))
 
-    id_query_criteria_map = load_query_criteria(args.query_criteria_file)
+    id_query_criteria_map,_ = load_query_criteria(args.query_criteria_file)
 
     process(agent, args.input_file, args.output_file, id_query_criteria_map)

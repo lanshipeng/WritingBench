@@ -7,9 +7,10 @@ class CriticAgent(object):
                  system_prompt: str = None):
         self.system_prompt = system_prompt
         self.model = LLM(
-            model="", # Your local path. Please download critic model from https://huggingface.co/AQuarterMile/WritingBench-Critic-Model-Qwen-7B.
+            model="AQuarterMile/WritingBench-Critic-Model-Qwen-7B", # Your local path. Please download critic model from https://huggingface.co/AQuarterMile/WritingBench-Critic-Model-Qwen-7B.
             tensor_parallel_size=1, # Your tensor parallel size setting. Defaults to 1, indicating no parallelism
         )
+        print("VLLM model loaded successfully!")
 
     def call_critic(self,
             messages: str,
