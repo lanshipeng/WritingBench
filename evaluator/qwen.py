@@ -6,7 +6,7 @@ from typing import Callable
 class QwenAgent:
     def __init__(self,
                  system_prompt: str = None,
-                 api_key: str = "sk-414d235f8c524df9995e46191072f7bf",     # 本地部署时可随意设置
+                 api_key: str = "",     # 本地部署时可随意设置
                  url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
                  model: str = "qwen-plus"):
         self.system_prompt = system_prompt
