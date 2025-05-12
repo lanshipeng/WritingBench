@@ -1,48 +1,84 @@
 import gradio as gr
 import argparse
+import os
+import PyPDF2
+from docx import Document
 from evaluate_benchmark import EvalAgent
 from evaluator import QwenAgent
 from prompt import evaluate_system
 from evaluate_benchmark import load_query_criteria
 
+# 模型列表
+MODEL_OPTIONS = ["qwen-plus","qwen-plus-latest","deepseek-v3","deepseek-r1","qwen-turbo", "qwen-long","qwen-max","qwen3-235b-a22b","qwen3-32b","qwen2.5-7b-instruct","qwen2.5-32b-instruct",
+                 "qwen2.5-72b-instruct","llama3.1-8b-instruct","llama-4-maverick-17b-128e-instruct","llama-4-scout-17b-16e-instruct"]
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process lines from an input file.")
-    parser.add_argument("--ak", type=str,required=True, help="qwen ak.")
-
+    parser.add_argument("--ak", type=str, required=True, help="Qwen API Key")
     args = parser.parse_args()
 
-    # 加载类型配置
+    # 加载评分维度配置
     query_criteria_map, subtype_choices = load_query_criteria("criteria.jsonl")
-    agent = EvalAgent(QwenAgent(system_prompt=evaluate_system,api_key=args.ak), query_criteria_map)
-
-    print("剧本类型配置：", subtype_choices)
-
-    # 创建 label -> value 的映射
-    label_value_map = {item["label"]: item["value"] for item in subtype_choices}
+    drama_map = {item["desc"]: item["index"] for item in subtype_choices}
 
     with gr.Blocks() as demo:
-        gr.Markdown("### AI评分")
+        gr.Markdown("### AI剧本评分系统")
 
-        # 下拉菜单显示 label，但实际存储 value
-        label = gr.Dropdown(
-            choices=[item["label"] for item in subtype_choices],  # 显示 label
-            label="选择剧本类型",
-            value=subtype_choices[0]["label"] if subtype_choices else None  # 默认选中第一个
-        )
+        with gr.Row():
+            drama_desc = gr.Dropdown(
+                choices=[item["desc"] for item in subtype_choices],
+                label="选择剧本类型",
+                value=subtype_choices[0]["desc"] if subtype_choices else None
+            )
+            model_selector = gr.Dropdown(
+                choices=MODEL_OPTIONS,
+                label="model",
+                value=MODEL_OPTIONS[0]
+            )
 
-        drama_content = gr.Textbox(lines=10, label="请输入剧本内容")
-        # output = gr.Textbox(label="评分结果", lines=4)
+        with gr.Row():
+            drama_content = gr.Textbox(lines=10, label="请输入剧本内容", interactive=True)
+            file_input = gr.File(label="上传剧本文件（支持 .txt | .docx | .pdf）", file_types=[".txt", ".docx", ".pdf"])
+
         output = gr.HTML()
         submit_btn = gr.Button("提交评分")
-        
-        def label_to_value(label, content):
-            """将用户选择的 label 转换为 value 再提交"""
-            value = label_value_map.get(label)
-            return agent.evaluate_script(value, content)
-        
+
+        def load_file(file):
+            if file is None:
+                return ""
+            ext = os.path.splitext(file.name)[-1].lower()
+            try:
+                if ext == ".txt":
+                    with open(file.name, "r", encoding="utf-8") as f:
+                        return f.read()
+                elif ext == ".docx":
+                    doc = Document(file.name)
+                    return "\n".join([para.text for para in doc.paragraphs])
+                elif ext == ".pdf":
+                    reader = PyPDF2.PdfReader(file.name)
+                    text = ""
+                    for page in reader.pages:
+                        text += page.extract_text()
+                    return text
+            except Exception as e:
+                return f"文件解析失败: {e}"
+            return "不支持的文件类型"
+
+        def evaluate(drama_desc, content, model_name):
+            print("model:",model_name)
+            drama_desc = drama_map.get(drama_desc)
+            agent = EvalAgent(QwenAgent(system_prompt=evaluate_system, api_key=args.ak, model=model_name), query_criteria_map)
+            return agent.evaluate(drama_desc, content)
+
+        file_input.change(
+            fn=load_file,
+            inputs=file_input,
+            outputs=drama_content
+        )
+
         submit_btn.click(
-            fn=label_to_value,
-            inputs=[label, drama_content],
+            fn=evaluate,
+            inputs=[drama_desc, drama_content, model_selector],
             outputs=output
         )
 

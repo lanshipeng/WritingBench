@@ -8,7 +8,7 @@ class QwenAgent:
                  system_prompt: str = None,
                  api_key: str = "",     # 本地部署时可随意设置
                  url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-                 model: str = "qwen-plus"):
+                 model: str = ""):
         self.system_prompt = system_prompt
         self.api_key = api_key
         self.url = url

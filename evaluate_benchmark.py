@@ -55,7 +55,7 @@ class EvalAgent(object):
             return response
         else:
             raise ValueError("Fail to generate score!")
-    def evaluate_script(self, index, drama_content):
+    def evaluate(self, index, drama_content):
         content = {"index": index, "response": drama_content}
                 
         if index not in self.query_criteria_map:
@@ -162,7 +162,7 @@ def load_query_criteria(jsonl_file_path):
             data_list[obj['index']] = {}
             data_list[obj['index']]['query'] = obj['query']
             data_list[obj['index']]['criteria'] = obj['criteria']
-            subtype_list.append({"label": obj['subtype'], "value": obj['index']})
+            subtype_list.append({"desc": obj['subtype'], "index": obj['index']})
     return data_list,subtype_list
 
 def process(agent, input_file, out_file, id_query_criteria_map):
