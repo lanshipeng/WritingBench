@@ -22,7 +22,7 @@ if __name__ == "__main__":
     drama_map = {item["desc"]: item["index"] for item in subtype_choices}
 
     with gr.Blocks() as demo:
-        gr.Markdown("### AI剧本评分系统")
+        gr.Markdown("### AI剧本评分")
 
         with gr.Row():
             drama_desc = gr.Dropdown(
