@@ -64,11 +64,24 @@ if __name__ == "__main__":
                 return f"文件解析失败: {e}"
             return "不支持的文件类型"
 
-        def evaluate(drama_desc, content, model_name):
-            print("model:",model_name)
+        def evaluate(drama_desc, content, model_name,progress=gr.Progress()):
+            print("model:", model_name)
+            
+            progress(0.0, desc="准备评估参数...")
             drama_desc = drama_map.get(drama_desc)
+            
+            progress(0.0, desc="初始化AI模型...")
             agent = EvalAgent(QwenAgent(system_prompt=evaluate_system, api_key=args.ak, model=model_name), query_criteria_map)
-            return agent.evaluate(drama_desc, content)
+            
+            def progress_callback(prog, desc):
+                progress(prog, desc=desc)
+            
+            # 执行评估
+            progress(0, desc="开始评估...")
+            result = agent.evaluate(drama_desc, content, progress_callback)
+            
+            progress(1.0, desc="评估完成")
+            return result
 
         file_input.change(
             fn=load_file,

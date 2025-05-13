@@ -55,7 +55,7 @@ class EvalAgent(object):
             return response
         else:
             raise ValueError("Fail to generate score!")
-    def evaluate(self, index, drama_content):
+    def evaluate(self, index, drama_content,progress_callback=None):
         content = {"index": index, "response": drama_content}
                 
         if index not in self.query_criteria_map:
@@ -70,6 +70,8 @@ class EvalAgent(object):
         }
 
         total_score = 0  # 总分累加器
+        total_steps = len(criteria)*EVAL_TIMES
+        current_step = 0
         # 添加总进度条（评估所有标准）
         with tqdm(total=len(criteria)*EVAL_TIMES, 
                 desc=f"评估剧本类型 {index}", 
@@ -84,6 +86,11 @@ class EvalAgent(object):
                     data["scores"][c["name"]].append(score)
                     total_score += float(score["score"])  # 直接累加每次评分的分数
                     pbar.update(1)  # 更新进度条
+                    current_step +=1
+                    if progress_callback:
+                        progress = current_step / total_steps
+                        progress_callback(progress, desc=f"评估标准: {c['name']}")
+
         # 计算整体平均分（总分数 / 总评分次数）
         if criteria and EVAL_TIMES > 0:
             data["average_score"] = round(total_score / (len(criteria) * EVAL_TIMES), 1)
