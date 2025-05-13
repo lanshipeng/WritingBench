@@ -9,7 +9,7 @@ from prompt import evaluate_system
 from evaluate_benchmark import load_query_criteria
 
 # 模型列表
-MODEL_OPTIONS = ["qwen-plus","qwen-plus-latest","deepseek-v3","deepseek-r1","qwen-turbo", "qwen-long","qwen-max","qwen3-235b-a22b","qwen3-32b","qwen2.5-7b-instruct","qwen2.5-32b-instruct",
+MODEL_OPTIONS = ["qwen-plus","qwen-plus-latest","deepseek-v3","deepseek-r1","qwen-turbo", "qwen-long","qwen-max-latest","qwen3-235b-a22b","qwen3-32b","qwen2.5-7b-instruct","qwen2.5-32b-instruct",
                  "qwen2.5-72b-instruct","llama3.1-8b-instruct","llama-4-maverick-17b-128e-instruct","llama-4-scout-17b-16e-instruct"]
 
 if __name__ == "__main__":
