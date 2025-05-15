@@ -17,15 +17,11 @@ spec:
       - name: ${APP_NAME}
         image: ${IMAGE}
         imagePullPolicy: IfNotPresent
-        args: ["--ak", "$(QWEN_API_KEY)"]
+        args: ["--ak", "${QWEN_API_KEY}"]
         ports:
         - containerPort: 7860
-        env:
-        - name: QWEN_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: api-secrets
-              key: qwen-api-key
+      imagePullSecrets:
+        - name: sg-acr-credential
 
 ---
 apiVersion: v1
