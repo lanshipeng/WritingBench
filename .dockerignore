@@ -1,0 +1,13 @@
+.git
+.gitignore
+
+benchmark_query/
+flagged/
+pics/
+.vscode/
+*.swp
+*.swo
+
+README.md
+LICENSE
+*.log
