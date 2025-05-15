@@ -9,8 +9,8 @@ from prompt import evaluate_system
 from evaluate_benchmark import load_query_criteria
 
 # 模型列表
-MODEL_OPTIONS = ["qwen-plus","qwen-plus-latest","deepseek-v3","deepseek-r1","qwen-turbo", "qwen-long","qwen-max-latest","qwen3-235b-a22b","qwen3-32b","qwen2.5-7b-instruct","qwen2.5-32b-instruct",
-                 "qwen2.5-72b-instruct","llama3.1-8b-instruct","llama-4-maverick-17b-128e-instruct","llama-4-scout-17b-16e-instruct"]
+MODEL_OPTIONS = ["qwen-plus","qwen-plus-latest","deepseek-v3","deepseek-r1","qwen-turbo", "qwen-long","qwen-max-latest","qwen3-235b-a22b","qwen3-32b","qwen2.5-7b-instruct",
+                 "qwen2.5-32b-instruct","qwen2.5-72b-instruct","llama3.1-8b-instruct","llama-4-maverick-17b-128e-instruct","llama-4-scout-17b-16e-instruct"]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process lines from an input file.")
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     drama_map = {item["desc"]: item["index"] for item in subtype_choices}
 
     with gr.Blocks() as demo:
-        gr.Markdown("### AI剧本评分")
+        gr.Markdown("### 🎬AI剧本评分")
 
         with gr.Row():
             drama_desc = gr.Dropdown(
