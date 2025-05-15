@@ -6,4 +6,4 @@ python-docx
 tqdm
 numpy
 jsonlines
-
+vllm
