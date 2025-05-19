@@ -1,4 +1,4 @@
-FROM registry.ap-southeast-1.aliyuncs.com/python-base-image:1.0.1 AS build
+FROM registry.ap-southeast-1.aliyuncs.com/dev-shengshi/python-base-image:1.0.1
 
 WORKDIR /app
 
