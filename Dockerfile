@@ -1,12 +1,8 @@
-# 使用Python 3.9作为基础镜像
-FROM python:3.9-slim
+FROM registry.ap-southeast-1.aliyuncs.com/python-base-image:1.0.1 AS build
 
 WORKDIR /app
 
 COPY . /app/
-
-# 安装依赖
-RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 EXPOSE 7860
 
