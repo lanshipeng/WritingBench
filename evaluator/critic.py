@@ -1,15 +1,15 @@
 import time
 from typing import Callable
-from vllm import LLM, SamplingParams
+# from vllm import LLM, SamplingParams
 
 class CriticAgent(object):
     def __init__(self,
                  system_prompt: str = None):
         self.system_prompt = system_prompt
-        self.model = LLM(
-            model="AQuarterMile/WritingBench-Critic-Model-Qwen-7B", # Your local path. Please download critic model from https://huggingface.co/AQuarterMile/WritingBench-Critic-Model-Qwen-7B.
-            tensor_parallel_size=1, # Your tensor parallel size setting. Defaults to 1, indicating no parallelism
-        )
+        # self.model = LLM(
+        #     model="AQuarterMile/WritingBench-Critic-Model-Qwen-7B", # Your local path. Please download critic model from https://huggingface.co/AQuarterMile/WritingBench-Critic-Model-Qwen-7B.
+        #     tensor_parallel_size=1, # Your tensor parallel size setting. Defaults to 1, indicating no parallelism
+        # )
         print("VLLM model loaded successfully!")
 
     def call_critic(self,
