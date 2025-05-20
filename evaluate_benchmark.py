@@ -34,7 +34,7 @@ class EvalAgent(object):
     def generate_score(self, content, query, criteria):
         prompt_data = {
             "query": query,
-            "response": content["response"],
+            "drama": content["drama"],
             "criteria": criteria,
         }
         retry = 0
@@ -56,7 +56,7 @@ class EvalAgent(object):
         else:
             raise ValueError("Fail to generate score!")
     def evaluate(self, index, drama_content,progress_callback=None):
-        content = {"index": index, "response": drama_content}
+        content = {"index": index, "drama": drama_content}
                 
         if index not in self.query_criteria_map:
             return {"error": "未知剧本类型"}

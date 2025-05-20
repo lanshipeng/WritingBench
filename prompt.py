@@ -1,9 +1,9 @@
 evaluate_system = """
-You are an expert evaluator with extensive experience in evaluating response of given query.
+You are an expert evaluator with extensive experience in evaluating drama of given query.
 """.strip()
 
 evaluate_prompt = """
-Evaluate the Response based on the Query and Criteria provided following the Scoring Rules.
+Evaluate the Drama based on the Query and Criteria provided following the Scoring Rules.
 
 ** Scoring Rules **
 
@@ -13,11 +13,11 @@ Evaluate the Response based on the Query and Criteria provided following the Sco
 "7-8": "Above average score description: Strong performance characterized by competent execution, though minor refinements are needed to achieve excellence.",
 "9-10": "High score description: Exceptional performance with all aspects optimally addressed, demonstrating superior effectiveness and quality without any flaws."
 
--Provide reasons for each score by indicating specific strengths or deficiencies within the Response. Reference exact text passages to justify the score, ensuring that each reason is concrete and aligns with the criteria requirements while highlighting key gaps from the ideal answer.
+-Provide reasons for each score by indicating specific strengths or deficiencies within the Drama. Reference exact text passages to justify the score, ensuring that each reason is concrete and aligns with the criteria requirements while highlighting key gaps from the ideal answer.
 
--Be very STRICT and do not be misled by format or length; ensure that the Response is thoroughly evaluated beyond superficial appearances.
+-Be very STRICT and do not be misled by format or length; ensure that the Drama is thoroughly evaluated beyond superficial appearances.
 
--Carefully discern whether the content of the Response is an illusion, appearing substantial but actually entirely fabricated.
+-Carefully discern whether the content of the Drama is an illusion, appearing substantial but actually entirely fabricated.
 
 -Sometimes the model may only provide an introduction or an overview without truly completing the query, which should be considered a failed response. Carefully discern this.
 
@@ -38,8 +38,8 @@ Return the results in the following JSON format, Only output the following JSON 
 ** Query **
 ```{query}```
 
-** Response **
-```{response}```
+** Drama Script **
+```{drama}```
 
 Provide your evaluation based on the criteria restated below:
 
