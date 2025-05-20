@@ -1,15 +1,4 @@
-# 使用官方 Ubuntu 作为基础镜像
 FROM python:3.10.17-bookworm
-
-# 安装 Python3 和 pip3 及一些依赖工具
-#RUN apt-get update && apt-get install -y \
-#    python3 \
-#    python3-pip \
-#    python3-dev \
-#    build-essential \
-#    git \
-#    curl \
-#    && apt-get clean
 
 # 拷贝 requirements.txt 到容器中
 COPY requirements.txt /app/requirements.txt
@@ -24,7 +13,7 @@ RUN pip3 install --upgrade pip \
 # 默认命令
 CMD [ "python3" ]
 
-# docker build -t python-base-image:v1.0.1 .
-# docker tag python-base-image:v1.0.1 registry.ap-southeast-1.aliyuncs.com/python-base-image:v1.0.1
+# docker build -f Dockerfile-base -t python-base-image:v1.0.1 
+# docker tag python-base-image:v1.0.1 registry.ap-southeast-1.aliyuncs.com/dev-shengshi/python-base-image:v1.0.1
 # docker login registry.ap-southeast-1.aliyuncs.com
-# docker push registry.ap-southeast-1.aliyuncs.com/python-base-image:v1.0.1
+# docker push registry.ap-southeast-1.aliyuncs.com/dev-shengshi/python-base-image:v1.0.1
