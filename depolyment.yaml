@@ -20,9 +20,25 @@ spec:
         args: ["--ak", "${QWEN_API_KEY}"]
         ports:
         - containerPort: 7860
+        resources:
+            requests:
+              cpu: "100m"
+              memory: "32Mi"
+            limits:
+              cpu: "2"
+              memory: "512Mi"
+        livenessProbe: 
+            tcpSocket:
+              port: 7860
+            initialDelaySeconds: 5
+            periodSeconds: 5
+        readinessProbe:
+              tcpSocket:
+                port: 7860
+              initialDelaySeconds: 5
+              periodSeconds: 5
       imagePullSecrets:
         - name: sg-acr-credential
-
 ---
 apiVersion: v1
 kind: Service
